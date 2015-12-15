@@ -1,4 +1,4 @@
-package uriage;
+package sales;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -92,7 +92,7 @@ public class UriageSyuukei2 {
 					System.exit(0);
 				}
 			}
-		} catch (IOException err) {
+		} catch (Exception err) {
 			System.out.println("売上リスト取得時のエラー\n" + err);
 		}
 	}
