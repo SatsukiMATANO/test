@@ -27,33 +27,33 @@ public class SalesSummary {
 		// リストをつくる（arg、読み込みファイル名、桁数チェック、売上合計の格納先、リストの格納先、エラー表示名）
 		try {
 			if (makeLists(args[0], "branch.lst", 3, branchSalesMap, branchMap, "支店")
-					== false)
+				== false)
 				return;
-			if (makeLists(args[0], "commodity.lst", 8, commoditySalesMap, commodityMap,
+			if (makeLists(args[0], "commodity.lst", 8, commoditySalesMap,
+					commodityMap,
 					"商品") == false)
 				return;
 		} catch (Exception e) {
-			System.out.println("リスト作成時のエラー\n" + e);
 			return;
 		}
 
 		// ファイル名の連番確認用リスト
 		List<String> salesCheckList = new ArrayList<>();
-		
 		File[] files = new File(args[0]).listFiles();
-		String fileName = null;
 		for (int i = 0; i < files.length; i++) {
+			String fileName = null;
 			fileName = files[i].getName();
-			
+
 			// ファイル名の連番チェック
 			if (files[i].isFile() && fileName.endsWith(".rcd")) {
 				int lastPosition = fileName.lastIndexOf('.');
 				if (lastPosition == 8) {
-					String checkName;
-					checkName = fileName.substring(0, lastPosition);
+					String checkName = fileName.substring(0, lastPosition);
 					salesCheckList.add(checkName);
+
 				}
 			}
+
 			for (int j = 0; j < salesCheckList.size(); j++) {
 				try {
 					int name = Integer.parseInt(salesCheckList.get(j));
@@ -92,7 +92,7 @@ public class SalesSummary {
 					}
 				}
 			}
-			
+
 			if (files[i].isFile() && fileName.endsWith(".rcd")) {
 				// 売上の集計
 				if (total(branchSalesMap, salesRcdList, 0, fileName, "店舗") == false)
@@ -100,11 +100,11 @@ public class SalesSummary {
 				if (total(commoditySalesMap, salesRcdList, 1, fileName, "商品") == false)
 					return;
 			}
-				// 集計の出力
-				if (output(args[0], branchMap, branchSalesMap, "branch.out") == false)
-					return;
-				if (output(args[0], commodityMap, commoditySalesMap, "commodity.out") == false)
-					return;
+			// 集計の出力
+			if (output(args[0], branchMap, branchSalesMap, "branch.out") == false)
+				return;
+			if (output(args[0], commodityMap, commoditySalesMap, "commodity.out") == false)
+				return;
 		}
 	}
 
@@ -153,7 +153,7 @@ public class SalesSummary {
 	private static boolean total(Map<String, Long> salesMap,
 			List<String> salesList, int index, String fileName, String codeName) {
 		try {
-			Long sales = (long) 0;
+			Long sales = 0L;
 			if (salesMap.get(salesList.get(index)) == null) {
 				System.out.println(fileName + "の" + codeName + "コードが不正です");
 				return false;
@@ -182,11 +182,11 @@ public class SalesSummary {
 
 		List<Entry<String, Long>> ent = new ArrayList<>(salesMap.entrySet());
 		Collections.sort(ent, new Comparator<Entry<String, Long>>() { // 降順にソート
-			public int compare(Entry<String, Long> o1,
-				Entry<String, Long> o2) {
-					return o2.getValue().compareTo(o1.getValue());
-				}
-		});
+					public int compare(Entry<String, Long> o1,
+							Entry<String, Long> o2) {
+						return o2.getValue().compareTo(o1.getValue());
+					}
+				});
 
 		PrintWriter pw = null;
 		try {
