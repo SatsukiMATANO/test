@@ -58,7 +58,7 @@ public class SalesSummary {
 				try {
 					int name = Integer.parseInt(salesCheckList.get(j));
 					if (name != (j + 1)) {
-						System.out.println("売上ファイル名が連番になっていません"); // error
+						System.out.println("売上ファイル名が連番になっていません");
 						return;
 					}
 				} catch (NumberFormatException e) {
@@ -77,7 +77,7 @@ public class SalesSummary {
 					while ((line = sales.readLine()) != null) {
 						++n;
 						if (n > 3) {
-							System.out.println(fileName + "のフォーマットが不正です"); // error
+							System.out.println(fileName + "のフォーマットが不正です");
 							return;
 						}
 						salesRcdList.add(line);
@@ -100,7 +100,7 @@ public class SalesSummary {
 				if (total(commoditySalesMap, salesRcdList, 1, fileName, "商品") == false)
 					return;
 			}
-				// 集計の出力(args、リスト、売上合計、出力ファイル名）
+				// 集計の出力
 				if (output(args[0], branchMap, branchSalesMap, "branch.out") == false)
 					return;
 				if (output(args[0], commodityMap, commoditySalesMap, "commodity.out") == false)
@@ -155,7 +155,7 @@ public class SalesSummary {
 		try {
 			Long sales = (long) 0;
 			if (salesMap.get(salesList.get(index)) == null) {
-				System.out.println(fileName + "の" + codeName + "コードが不正です"); // error
+				System.out.println(fileName + "の" + codeName + "コードが不正です");
 				return false;
 			}
 			sales = salesMap.get(salesList.get(index));
@@ -165,7 +165,7 @@ public class SalesSummary {
 
 			// 桁数チェック
 			if (valueStr.length() > 10) {
-				System.out.println("合計金額が10桁を超えました"); // error
+				System.out.println("合計金額が10桁を超えました");
 				return false;
 			}
 		} catch (Exception e) {
@@ -197,7 +197,7 @@ public class SalesSummary {
 						+ e.getValue());
 			}
 		} catch (IOException e) {
-			System.out.println("データの出力時にエラーが発生しました"); // error
+			System.out.println("データの出力時にエラーが発生しました");
 			return false;
 		} finally {
 			pw.close();
