@@ -30,8 +30,7 @@ public class SalesSummary {
 				== false)
 				return;
 			if (makeLists(args[0], "commodity.lst", 8, commoditySalesMap,
-					commodityMap,
-					"商品") == false)
+					commodityMap, "商品") == false)
 				return;
 		} catch (Exception e) {
 			return;
@@ -41,8 +40,7 @@ public class SalesSummary {
 		List<String> salesCheckList = new ArrayList<>();
 		File[] files = new File(args[0]).listFiles();
 		for (int i = 0; i < files.length; i++) {
-			String fileName = null;
-			fileName = files[i].getName();
+			String fileName = files[i].getName();
 
 			// ファイル名の連番チェック
 			if (files[i].isFile() && fileName.endsWith(".rcd")) {
@@ -50,7 +48,6 @@ public class SalesSummary {
 				if (lastPosition == 8) {
 					String checkName = fileName.substring(0, lastPosition);
 					salesCheckList.add(checkName);
-
 				}
 			}
 
@@ -123,7 +120,8 @@ public class SalesSummary {
 					System.out.println(errorWord + "定義ファイルのフォーマットが不正です");
 					return false; //桁数、要素数のエラー
 				}
-				salesMap.put(bra[0], (long) 0);
+				Long firstSalesValue = 0L;
+				salesMap.put(bra[0], firstSalesValue);
 				listMap.put(bra[0], bra[1]);
 
 				if (listFileName == "branch.lst")
@@ -135,13 +133,12 @@ public class SalesSummary {
 					}
 				if (listFileName == "commodity.lst")
 					if (bra[0].matches("^[a-zA-Z0-9]+$") == false) {
-						System.out.println("商品定義ファイルのフォーマットが不正です"); // error
+						System.out.println("商品定義ファイルのフォーマットが不正です");
 						return false; //コードチェック（英数字のみ）
 					}
-
 			}
 		} catch (FileNotFoundException e) {
-			System.out.println(errorWord + "ファイルが存在しません"); // error
+			System.out.println(errorWord + "ファイルが存在しません");
 			return false;
 		} finally {
 			br.close();
