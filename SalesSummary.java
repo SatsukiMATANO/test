@@ -40,66 +40,73 @@ public class SalesSummary {
 		File[] files = new File(args[0]).listFiles();
 		for (int i = 0; i < files.length; i++) {
 			String fileName = files[i].getName();
+			List<String> salesRcdList = new ArrayList<>(); // 売上げリストの格納
 
-			// ファイル名の連番チェック
+			//ファイルの連番のチェック
+			if (files[i].isFile() && fileName.endsWith(".rcd")) {
+				int lastPosition = fileName.lastIndexOf('.');
+				if (lastPosition == 8) { //
+					String checkName = fileName.substring(0, lastPosition);
+					salesCheckList.add(checkName);
+					for (int j = 0; j < salesCheckList.size(); j++) {
+						try {
+							int name = Integer.parseInt(salesCheckList.get(j));
+							if (name != (j + 1)) {
+								System.out.println("売上ファイル名が連番になっていません");
+								return;
+							}
+						} catch (NumberFormatException e) {
+						}
+					}
+				}
+			}
 			if (files[i].isFile() && fileName.endsWith(".rcd")) {
 				int lastPosition = fileName.lastIndexOf('.');
 				if (lastPosition == 8) {
 					String checkName = fileName.substring(0, lastPosition);
-					salesCheckList.add(checkName);
-				} else {
-					System.out.println("売上ファイル名が連番になっていません");
-					return;
-				}
-			}
-
-			for (int j = 0; j < salesCheckList.size(); j++) {
-				try {
-					int name = Integer.parseInt(salesCheckList.get(j));
-					if (name != (j + 1)) {
-						System.out.println("売上ファイル名が連番になっていません");
-						return;
-					}
-				} catch (NumberFormatException e) {
-					System.out.println("売上ファイル名が連番になっていません");
-					return;
-				}
-			}
-			// 売上げリストの格納
-			List<String> salesRcdList = new ArrayList<>();
-			if (files[i].isFile() && fileName.endsWith(".rcd")) {
-				BufferedReader sales = null;
-				try {
-					sales = new BufferedReader(new FileReader(files[i]));
-					int n = 0;
-					String line = "";
-					while ((line = sales.readLine()) != null) {
-						++n;
-						if (n > 3) {
-							System.out.println(fileName + "のフォーマットが不正です");
-							return;
+					if (checkName.matches("^[0-9]+$")) {
+						BufferedReader sales = null;
+						try {
+							sales = new BufferedReader(new FileReader(files[i]));
+							int n = 0;
+							String line = "";
+							while ((line = sales.readLine()) != null) {
+								++n;
+								salesRcdList.add(line); //Rcdリストの格納コード
+							}
+							if (n != 3) {
+								System.out.println(fileName + "のフォーマットが不正です");
+								return;
+							}
+						} catch (Exception e) {
+							System.out.println("売上ファイル読み込み時にエラーが発生しました");
+						} finally {
+							try {
+								sales.close();
+							} catch (IOException e) {
+								System.out.println("売上ファイルを閉じる際にエラーが発生しました");
+							}
 						}
-						salesRcdList.add(line);
-					}
-				} catch (Exception e) {
-					System.out.println("売上ファイル読み込み時にエラーが発生しました");
-				} finally {
-					try {
-						sales.close();
-					} catch (IOException e) {
-						System.out.println("売上ファイルを閉じる際にエラーが発生しました");
 					}
 				}
 			}
 
 			if (files[i].isFile() && fileName.endsWith(".rcd")) {
-				// 売上の集計
-				if (!total(branchSalesMap, salesRcdList, 0, fileName, "店舗"))
-					return;
-				if (!total(commoditySalesMap, salesRcdList, 1, fileName, "商品"))
-					return;
+				int lastPosition = fileName.lastIndexOf('.');
+				if (lastPosition == 8) {
+					String checkName = fileName.substring(0, lastPosition);
+					if (checkName.matches("^[0-9]+$")) {
+						// 売上の集計
+						if (!total(branchSalesMap, salesRcdList, 0, fileName, "店舗"))
+							return;
+						if (!total(commoditySalesMap, salesRcdList, 1, fileName,
+								"商品"))
+							return;
+					}
+				}
 			}
 		}
+
 		// 集計の出力
 		if (!output(args[0], branchMap, branchSalesMap, "branch.out"))
 			return;
@@ -127,21 +134,19 @@ public class SalesSummary {
 				listMap.put(list[0], list[1]);
 
 				if (listFileName.equals("branch.lst")) {
-					try {
-						Integer.parseInt(list[0]);
-					} catch (NumberFormatException e) {
+					if (!list[0].matches("^[0-9]+$")) {
 						System.out.println("支店定義ファイルのフォーマットが不正です");
 						return false; //コードチェック（数字のみ）
 					}
 				}
-				
-				if (listFileName.equals("commodity.lst")){
-					if (list[0].matches("^[a-zA-Z0-9]+$") == false) {
+
+				if (listFileName.equals("commodity.lst")) {
+					if (!list[0].matches("^[a-zA-Z0-9]+$")) {
 						System.out.println("商品定義ファイルのフォーマットが不正です");
 						return false; //コードチェック（英数字のみ）
 					}
 				}
-				
+
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println(errorWord + "ファイルが存在しません");
@@ -171,8 +176,8 @@ public class SalesSummary {
 				System.out.println("合計金額が10桁を超えました");
 				return false;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (NumberFormatException e) {
+			System.out.println(fileName + "のフォーマットが不正です");
 			return false;
 		}
 		return true;
