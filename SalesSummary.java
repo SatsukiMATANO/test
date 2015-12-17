@@ -17,19 +17,23 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class SalesSummary {
+
+	static String branch = "branch.lst"; //仕様定義ファイル名（支店）
+	static String commodity = "commodity.lst"; //同上（商品）
+
 	public static void main(String[] args) {
 
 		Map<String, String> branchMap = new HashMap<>(); // branchMapの格納
-		Map<String, Long> branchSalesMap = new HashMap<>(); // 店舗別売上げ合計の格納
+		Map<String, Long> branchSalesMap = new HashMap<>(); // 支店別売上げ合計の格納
 		Map<String, String> commodityMap = new HashMap<>(); // commodityMapの格納
 		Map<String, Long> commoditySalesMap = new HashMap<>(); // 商品別売上げ合計の格納
 
 		// リストの作成（arg、読み込みファイル名、桁数チェック、売上合計の格納先、リストの格納先、エラー表示名）
 		try {
-			if (!makeLists(args[0], "branch.lst", 3, branchSalesMap, branchMap, "支店"))
+			if (!makeLists(args[0], branch, 3, branchSalesMap, branchMap, "支店"))
 				return;
-			if (!makeLists(args[0], "commodity.lst", 8, commoditySalesMap,
-					commodityMap, "商品"))
+			if (!makeLists(args[0], commodity, 8, commoditySalesMap, commodityMap,
+					"商品"))
 				return;
 		} catch (Exception e) {
 			return;
@@ -87,14 +91,13 @@ public class SalesSummary {
 								System.out.println("売上ファイルを閉じる際にエラーが発生しました");
 							}
 						}
-					
 
-					// 売上の集計
-					if (!total(branchSalesMap, salesRcdList, 0, fileName, "店舗"))
-						return;
-					if (!total(commoditySalesMap, salesRcdList, 1, fileName,
-							"商品"))
-						return;
+						// 売上の集計
+						if (!total(branchSalesMap, salesRcdList, 0, fileName, "支店"))
+							return;
+						if (!total(commoditySalesMap, salesRcdList, 1, fileName,
+								"商品"))
+							return;
 					}
 				}
 			}
@@ -126,14 +129,14 @@ public class SalesSummary {
 				salesMap.put(list[0], firstSalesValue);
 				listMap.put(list[0], list[1]);
 
-				if (listFileName.equals("branch.lst")) { //支店コードチェック（数字のみ）
+				if (listFileName.equals(branch)) { //支店コードチェック（数字のみ）
 					if (!list[0].matches("^[0-9]+$")) {
 						System.out.println("支店定義ファイルのフォーマットが不正です");
 						return false;
 					}
 				}
 
-				if (listFileName.equals("commodity.lst")) { //商品コードチェック（英数字のみ）
+				if (listFileName.equals(commodity)) { //商品コードチェック（英数字のみ）
 					if (!list[0].matches("^[a-zA-Z0-9]+$")) {
 						System.out.println("商品定義ファイルのフォーマットが不正です");
 						return false;
@@ -173,7 +176,6 @@ public class SalesSummary {
 			return false;
 		}
 		return true;
-
 	}
 
 	// ファイルのアウトプット
