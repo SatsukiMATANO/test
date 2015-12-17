@@ -126,18 +126,22 @@ public class SalesSummary {
 				salesMap.put(list[0], firstSalesValue);
 				listMap.put(list[0], list[1]);
 
-				if (listFileName == "branch.lst")
+				if (listFileName.equals("branch.lst")) {
 					try {
 						Integer.parseInt(list[0]);
 					} catch (NumberFormatException e) {
 						System.out.println("支店定義ファイルのフォーマットが不正です");
 						return false; //コードチェック（数字のみ）
 					}
-				if (listFileName == "commodity.lst")
+				}
+				
+				if (listFileName.equals("commodity.lst")){
 					if (list[0].matches("^[a-zA-Z0-9]+$") == false) {
 						System.out.println("商品定義ファイルのフォーマットが不正です");
 						return false; //コードチェック（英数字のみ）
 					}
+				}
+				
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println(errorWord + "ファイルが存在しません");
