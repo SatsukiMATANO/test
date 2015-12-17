@@ -87,7 +87,7 @@ public class SalesSummary {
 								System.out.println("売上ファイルを閉じる際にエラーが発生しました");
 							}
 						}
-					}
+					
 
 					// 売上の集計
 					if (!total(branchSalesMap, salesRcdList, 0, fileName, "店舗"))
@@ -95,6 +95,7 @@ public class SalesSummary {
 					if (!total(commoditySalesMap, salesRcdList, 1, fileName,
 							"商品"))
 						return;
+					}
 				}
 			}
 		}
