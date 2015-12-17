@@ -24,7 +24,7 @@ public class SalesSummary {
 		Map<String, String> commodityMap = new HashMap<>(); // commodityMapの格納
 		Map<String, Long> commoditySalesMap = new HashMap<>(); // 商品別売上げ合計の格納
 
-		// リストをつくる（arg、読み込みファイル名、桁数チェック、売上合計の格納先、リストの格納先、エラー表示名）
+		// リストの作成（arg、読み込みファイル名、桁数チェック、売上合計の格納先、リストの格納先、エラー表示名）
 		try {
 			if (!makeLists(args[0], "branch.lst", 3, branchSalesMap, branchMap, "支店"))
 				return;
@@ -35,8 +35,8 @@ public class SalesSummary {
 			return;
 		}
 
-		// ファイル名の連番確認用リスト
-		List<String> salesCheckList = new ArrayList<>();
+		//売上ファイルの処理
+		List<String> salesCheckList = new ArrayList<>(); // ファイル名の連番確認用リスト
 		File[] files = new File(args[0]).listFiles();
 		for (int i = 0; i < files.length; i++) {
 			String fileName = files[i].getName();
@@ -45,25 +45,24 @@ public class SalesSummary {
 			//ファイルの連番のチェック
 			if (files[i].isFile() && fileName.endsWith(".rcd")) {
 				int lastPosition = fileName.lastIndexOf('.');
-				if (lastPosition == 8) { //
+				if (lastPosition == 8) {
 					String checkName = fileName.substring(0, lastPosition);
 					salesCheckList.add(checkName);
-					for (int j = 0; j < salesCheckList.size(); j++) {
+					
+					int minSalesFileName = Integer.parseInt(Collections.min(salesCheckList));
+					for (int j = 0 ; j < salesCheckList.size(); j++) {
 						try {
 							int name = Integer.parseInt(salesCheckList.get(j));
-							if (name != (j + 1)) {
+							if (name != minSalesFileName++) {
 								System.out.println("売上ファイル名が連番になっていません");
 								return;
 							}
 						} catch (NumberFormatException e) {
 						}
 					}
-				}
-			}
-			if (files[i].isFile() && fileName.endsWith(".rcd")) {
-				int lastPosition = fileName.lastIndexOf('.');
-				if (lastPosition == 8) {
-					String checkName = fileName.substring(0, lastPosition);
+
+					//もしファイル名が8桁の数字で構成されていればリストへ格納
+					//ファイルの中身が3行でない場合フォーマットエラーを表示し処理終了
 					if (checkName.matches("^[0-9]+$")) {
 						BufferedReader sales = null;
 						try {
@@ -88,14 +87,9 @@ public class SalesSummary {
 							}
 						}
 					}
-				}
-			}
 
-			if (files[i].isFile() && fileName.endsWith(".rcd")) {
-				int lastPosition = fileName.lastIndexOf('.');
-				if (lastPosition == 8) {
-					String checkName = fileName.substring(0, lastPosition);
 					if (checkName.matches("^[0-9]+$")) {
+
 						// 売上の集計
 						if (!total(branchSalesMap, salesRcdList, 0, fileName, "店舗"))
 							return;
@@ -107,7 +101,7 @@ public class SalesSummary {
 			}
 		}
 
-		// 集計の出力
+		// ファイルのアウトプットメソッド
 		if (!output(args[0], branchMap, branchSalesMap, "branch.out"))
 			return;
 		if (!output(args[0], commodityMap, commoditySalesMap, "commodity.out"))
@@ -125,28 +119,27 @@ public class SalesSummary {
 			while ((line = br.readLine()) != null) {
 				String[] list = line.split(",", -1);
 
-				if (list[0].length() != keta || list.length != 2) {
+				if (list[0].length() != keta || list.length != 2) { //桁数、要素数のエラー
 					System.out.println(errorWord + "定義ファイルのフォーマットが不正です");
-					return false; //桁数、要素数のエラー
+					return false;
 				}
 				Long firstSalesValue = 0L;
 				salesMap.put(list[0], firstSalesValue);
 				listMap.put(list[0], list[1]);
 
-				if (listFileName.equals("branch.lst")) {
+				if (listFileName.equals("branch.lst")) { //支店コードチェック（数字のみ）
 					if (!list[0].matches("^[0-9]+$")) {
 						System.out.println("支店定義ファイルのフォーマットが不正です");
-						return false; //コードチェック（数字のみ）
+						return false; 
 					}
 				}
 
-				if (listFileName.equals("commodity.lst")) {
+				if (listFileName.equals("commodity.lst")) { //商品コードチェック（英数字のみ）
 					if (!list[0].matches("^[a-zA-Z0-9]+$")) {
 						System.out.println("商品定義ファイルのフォーマットが不正です");
-						return false; //コードチェック（英数字のみ）
+						return false;
 					}
 				}
-
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println(errorWord + "ファイルが存在しません");
@@ -157,7 +150,7 @@ public class SalesSummary {
 		return true;
 	}
 
-	// 集計
+	// 売上の集計
 	private static boolean total(Map<String, Long> salesMap,
 			List<String> salesList, int index, String fileName, String codeName) {
 		try {
