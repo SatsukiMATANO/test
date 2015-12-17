@@ -48,9 +48,10 @@ public class SalesSummary {
 				if (lastPosition == 8) {
 					String checkName = fileName.substring(0, lastPosition);
 					salesCheckList.add(checkName);
-					
-					int minSalesFileName = Integer.parseInt(Collections.min(salesCheckList));
-					for (int j = 0 ; j < salesCheckList.size(); j++) {
+
+					int minSalesFileName = Integer.parseInt(Collections
+							.min(salesCheckList)); //rcdファイル名の最小値
+					for (int j = 0; j < salesCheckList.size(); j++) {
 						try {
 							int name = Integer.parseInt(salesCheckList.get(j));
 							if (name != minSalesFileName++) {
@@ -88,15 +89,12 @@ public class SalesSummary {
 						}
 					}
 
-					if (checkName.matches("^[0-9]+$")) {
-
-						// 売上の集計
-						if (!total(branchSalesMap, salesRcdList, 0, fileName, "店舗"))
-							return;
-						if (!total(commoditySalesMap, salesRcdList, 1, fileName,
-								"商品"))
-							return;
-					}
+					// 売上の集計
+					if (!total(branchSalesMap, salesRcdList, 0, fileName, "店舗"))
+						return;
+					if (!total(commoditySalesMap, salesRcdList, 1, fileName,
+							"商品"))
+						return;
 				}
 			}
 		}
@@ -130,7 +128,7 @@ public class SalesSummary {
 				if (listFileName.equals("branch.lst")) { //支店コードチェック（数字のみ）
 					if (!list[0].matches("^[0-9]+$")) {
 						System.out.println("支店定義ファイルのフォーマットが不正です");
-						return false; 
+						return false;
 					}
 				}
 
